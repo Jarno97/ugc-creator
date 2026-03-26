@@ -18,7 +18,7 @@ export default function App() {
     abortRef.current = controller
 
     // 5-minute hard timeout — aborts fetch if n8n never responds
-    const timeout = setTimeout(() => controller.abort(), 5 * 60 * 1000)
+    const timeout = setTimeout(() => controller.abort(), 10 * 60 * 1000)
 
     const startedAt = Date.now()
     dispatch({ type: 'START_GENERATION' })
@@ -41,7 +41,7 @@ export default function App() {
     } catch (err) {
       clearTimeout(timeout)
       if (err.name === 'AbortError') {
-        dispatch({ type: 'GENERATION_ERROR', error: 'Generation timed out after 5 minutes. Please try again.' })
+        dispatch({ type: 'GENERATION_ERROR', error: 'Generation timed out after 10 minutes. Please try again.' })
         return
       }
       dispatch({
