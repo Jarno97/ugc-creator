@@ -35,7 +35,20 @@ export async function callWebhook({ productUrl, productDescription, influencerSt
   }
 
   const data = await res.json()
-  if (!data.success) throw new Error(data.error || 'Generation failed')
+
+  // Debug: log what n8n actually returned
+  console.log('[webhook] response:', data)
+
+  // n8n "Respond immediately" mode returns { executionId } instead of the final result.
+  // Fix: in your n8n Webhook node → "Respond" → set to "When last node finishes".
+  if (data.executionId && !data.success) {
+    throw new Error(
+      `n8n responded immediately with executionId "${data.executionId}" instead of the final result. ` +
+      `Open your n8n Webhook node, set "Respond" to "When last node finishes", then re-test.`
+    )
+  }
+
+  if (!data.success) throw new Error(data.error || `Unexpected response: ${JSON.stringify(data)}`)
   return data
 }
 
